@@ -1,0 +1,4 @@
+.env
+/instance
+/Library/__pycache__
+/GUI/__pycache__

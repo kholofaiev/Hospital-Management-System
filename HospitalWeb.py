@@ -2,13 +2,17 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date, time, timedelta
+from dotenv import load_dotenv
+import os
 
+load_dotenv() 
 app = Flask(__name__, template_folder='Web/templates')
-app.config["SECRET_KEY"] = "17215705384732612141798389867525135744346110010"
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
 
 #setup database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hospital.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///hospital.db")
 db = SQLAlchemy(app)
+
 
 
  
