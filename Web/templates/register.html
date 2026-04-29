@@ -1,0 +1,87 @@
+{% extends "base.html"%}
+
+{% block body%} 
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Register</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6"> 
+            <form id="register-form" action="{{url_for('register')}}" method="post">
+                <div class="mb-3">
+                    <label for="name" class="form-label">First name:</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Last name:</label>
+                    <input type="text" class="form-control" name="lastname" id="lastname" required>
+                </div>
+                <div class="mb-3">
+                    <p></p>
+                    <p>Chose user category:</p>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="patient" name="category" value="patient" checked>
+                        <label class="form-check-label" for="patient">Patient</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="doctor" name="category" value="doctor">
+                        <label class="form-check-label" for="doctor">Doctor</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="dob" class="form-label">Date of Birth:</label>
+                    <input type="date" class="form-control" id="dob" name="dob">
+                </div>
+
+                <div class="mb-3">
+                    <label for="specialty" class="form-label">Doctor Specialization:</label>
+                    <input type="text" class="form-control" id="specialty" name="specialty" placeholder="EX. GP" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="********" required>
+                    <p></p>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                        <div class="col-md-6">
+                        <a href="{{url_for('login')}}">Already have an account? Login now</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const patientRadio = document.getElementById('patient');
+    const doctorRadio = document.getElementById('doctor');
+    const specializationInput = document.getElementById('specialty');
+    const dobInput = document.getElementById('dob');
+
+    function toggleInputs() {
+        if (doctorRadio.checked) {
+            specializationInput.disabled = false;
+            dob.disabled = true;
+            dobInput.value = ""; // Clear input if disabled
+        } else {
+            specializationInput.disabled = true;
+            specializationInput.value = ""; // Clear input if disabled
+            dob.disabled = false;
+        }
+    }
+
+    // Listen for changes
+    patientRadio.addEventListener('change', toggleInputs);
+    doctorRadio.addEventListener('change', toggleInputs);
+</script>
+{% endblock %}

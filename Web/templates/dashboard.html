@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Welcome, {{ user.name }} {{ user.lastname }}!</h2>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Your Profile Information</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                <li class="list-group-item"><strong>Account Type:</strong> {{ user.category.capitalize() }}</li>
+                
+                {# Show Specialty only if the user is a doctor #}
+                {% if user.category == 'doctor' %}
+                <li class="list-group-item"><strong>Specialty:</strong> {{ user.specialty }}</li>
+                {% endif %}
+
+                {# Show Date of Birth only if the user is a patient #}
+                {% if user.category == 'patient' %}
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ user.dob }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        </div>        
+    </div>
+</div>
+{% if user.category == 'patient' %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Book an Appointment</h3>
+            <form action="{{url_for('book_appointment')}}" method="post">
+                <div class="form-group">
+                    <label for="doctor">Choose a doctor:</label>
+                    <select name="doctor" id="doctor" class="form-control" required>
+                        <option value="" disabled selected>Select a professional...</option>
+                        {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">
+                                Dr. {{ doctor.name }} {{ doctor.lastname }} - {{ doctor.specialty }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Pick a date:</label>
+                    <input type="date" name="date" id="date" required>
+                    <label for="time">Pick timeslot</label>
+                    <input type="time" name="time" id="time" min="09:00" max="18:00">
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Book Appointment</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages%}
+                {% for message in messages %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{message}}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+<div class="container mt-5">
+    <h3>Appointment history</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+            </tr>
+            {% for appointment in appointments %}
+                <tr>
+                    <td>Dr. {{appointment.doctor.lastname}} - {{appointment.doctor.specialty}}</td>
+                    <td>{{appointment.appointment_date}}</td>
+                    <td>{{appointment.appointment_time}}</td>
+                    <td>{{appointment.diagnosis}}</td>
+                    <td>{{appointment.prescription}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
+
+
+{% if user.category == 'doctor' %}
+<div class="container mt-5">
+    <h3>Appointment history</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Action</th>
+            </tr>     
+            {% for appointment in appointments %}
+            <form action="{{url_for('submit_appointment')}}" method="post">
+                <tr>
+                    <td>{{appointment.patient.name}} {{appointment.patient.lastname}}</td>
+                    <td>{{appointment.appointment_date}}</td>
+                    <td>{{appointment.appointment_time}}</td>
+                    <td><input type="text" class="form-control" name="diagnosis" id="diagnosis" placeholder="Diagnosis" value="{{appointment.diagnosis}}"></td>
+                    <td><input type="text" class="form-control" name="prescription" id="prescription" placeholder="Prescription" value="{{appointment.prescription}}"></td>
+                    <td>
+                        <div class="row">
+                            <div class="col-md-3">
+                               <button type="submit" class="btn btn-success mt-3" name="action" value="submit">Submit</button>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-danger" name="action" value="close">Close Appointment</button>
+                            </div>
+                        </div>       
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="hidden" name="id" value="{{appointment.id}}">
+                            </div>
+                        </div>             
+                    </td>
+                </tr>
+            </form>
+            {% endfor %}
+        </table>
+    </div>
+    
+</div>
+{% endif %}
+{% endblock %}
