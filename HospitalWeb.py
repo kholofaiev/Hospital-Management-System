@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv() 
-app = Flask(__name__, template_folder='Web/templates')
+app = Flask(__name__, template_folder='templates')
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
 
 #setup database
