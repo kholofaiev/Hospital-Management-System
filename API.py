@@ -67,7 +67,7 @@ def login_for_access_token(
     if not user or not user.check_password(form_data.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Incorect username or password'
+            detail='Incorect email or password'
         )
     
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
@@ -101,6 +101,16 @@ def get_current_user(token: str, db: Session = Depends(get_db)):
             )
     return user
 
+  
+'''
+@app.get("/api/appointments/{appointment_id}", response_model=AppointmentResponse)
+def get_appointment(appointment_id: int, db: Session = Depends(get_db)):
+    appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
+    
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+        
+    return appointment'''
 
 @app.get('/api/appointments',response_model=list[AppointmentResponse])
 def get_user_appointments(token: str, db: Session = Depends(get_db)):
@@ -152,6 +162,15 @@ def create_appointment(token: str, appointment: AppointmentCreate, db: Session =
     #validate time
     appointment_date = appointment.appointment_date
     appointment_time = appointment.appointment_time
+    #Ask becaus I am lost :(
+    '''appointment_full = datetime.combine(appointment_date, appointment_time)
+    if appointment_date < date.today():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot travel in the past")
+    if appointment_date == date.today() and appointment_time <= datetime.now().time():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Time has already passed for today")
+    if appointment_full <= datetime.now() + timedelta(hours=2):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Booking closes 2 hours before appointment')
+    '''
     db_appoitment = Appointment(
         doctor_id = appointment.doctor_id,
         patient_id = appointment.patient_id,
